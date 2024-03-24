@@ -1,0 +1,27 @@
+// © EightBallDuVal
+
+//@version=4
+study("Moving Average Buy/Sell Indicator", overlay=true)
+
+o = security(syminfo.tickerid, timeframe.period, open)
+h = security(syminfo.tickerid, timeframe.period, high)
+l = security(syminfo.tickerid, timeframe.period, low)
+c = security(syminfo.tickerid, timeframe.period, close)
+
+avg_price = (o + h + l + c)/ 4
+
+moving_average = input(title="Moving Average", type=input.integer, defval=21, minval=10, maxval=250)
+
+s21ema = ema(close, moving_average)
+
+s21ma = sma(close, moving_average)
+
+sellsignal = (s21ema > avg_price) and (s21ma > avg_price) and (s21ma > s21ema)
+buysignal = (s21ema < avg_price) and (s21ma < avg_price) and (s21ma < s21ema)
+
+sellseries = sellsignal and crossover(s21ma, s21ema)
+buyseries = buysignal and crossunder(s21ma, s21ema)
+
+plotshape(series=sellseries, title="Short", style=shape.triangledown, location=location.abovebar, color=color.red, text="SHORT", size=size.small)
+
+plotshape(series=buyseries, title="Long", style=shape.triangleup, location=location.belowbar, color=color.green, text="LONG", size=size.small)

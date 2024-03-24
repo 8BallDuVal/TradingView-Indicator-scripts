@@ -1,0 +1,27 @@
+//@version=4
+study(title="Ethereum Long/Short Bar Chart")
+
+longs = security("BITFINEX:ETHUSDLONGS", timeframe.period, close)
+shorts = security("BITFINEX:ETHUSDSHORTS", timeframe.period, close)
+
+//security(symbol, resolution, expression, gaps, lookahead)
+expr = sma(close,21)
+s1_long = security("BITFINEX:ETHUSDLONGS", "1440", expr) // 1440 Minutes (24 hours) 
+s2_short = security("BITFINEX:ETHUSDSHORTS", "1440", expr) // 1440 Minutes (24 hours)
+plot(s1_long - s2_short, color=color.purple, linewidth=3, style=plot.style_line)
+
+difference = longs - shorts
+
+// checking if difference between longs and shorts is positive. if so, show green columns. if negative, show red columns.
+color_columns = if longs > shorts
+    color.green
+else
+    color.red
+plot(difference, color=color_columns, style=plot.style_columns, transp=20)
+
+plotshape(series=crossover(longs,shorts), style=shape.triangleup, color=color.green, size=size.tiny)
+plotshape(series=crossunder(longs,shorts), style=shape.triangledown, color=color.red, size=size.tiny)
+
+
+
+hline(0, title="Zero", color=color.gray, linestyle=hline.style_dashed)

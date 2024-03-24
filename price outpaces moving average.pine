@@ -1,0 +1,28 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © EightBallDuVal
+
+//@version=4
+study("My Script", overlay=true)
+
+o = security(syminfo.tickerid, timeframe.period, open)
+h = security(syminfo.tickerid, timeframe.period, high)
+l = security(syminfo.tickerid, timeframe.period, low)
+c = security(syminfo.tickerid, timeframe.period, close)
+
+avg_price = (o + h + l + c)/ 4
+
+moving_average = input(title="Moving Average", type=input.integer, defval=21, minval=10, maxval=200)
+
+s21ema = ema(close, moving_average)
+
+overshoot_bull = input(title="Bullish Overshoot Percentage (x100)", type=input.float, defval=1.5, minval=1, maxval=100)
+
+overshoot_bear = input(title="Bearish Overshoot Percentage (x100)", type=input.float, defval=1.5, minval=1, maxval=100)
+
+shortCond = (avg_price / s21ema) > overshoot_bull
+
+plotshape(series=shortCond, title="Short", style=shape.triangledown, location=location.abovebar, color=color.red, text="SHORT", size=size.small)
+
+longCond = (s21ema/ avg_price) > overshoot_bear
+
+plotshape(series=longCond, title="Long", style=shape.triangleup, location=location.belowbar, color=color.green, text="LONG", size=size.small)

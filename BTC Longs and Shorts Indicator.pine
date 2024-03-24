@@ -1,0 +1,30 @@
+//@version=4
+study(title="Bitcoin Long/Short Bar Chart")
+
+longs = security("BITFINEX:BTCUSDLONGS", timeframe.period, close)
+shorts = security("BITFINEX:BTCUSDSHORTS", timeframe.period, close)
+
+//security(symbol, resolution, expression, gaps, lookahead)
+expr = sma(close,21)
+s1_long = security("BITFINEX:BTCUSDLONGS", "1440", expr) // 1440 Minutes (24 hours)
+s2_short = security("BITFINEX:BTCUSDSHORTS", "1440", expr) // 1440 Minutes (24 hours)
+plot(s1_long - s2_short, color=color.purple, linewidth=3, style=plot.style_line)
+
+difference = longs - shorts
+
+// checking if difference between longs and shorts is positive. if so, show green columns. if negative, show red columns.
+color_columns = if longs > shorts
+    color.green
+else
+    color.red
+plot(difference, color=color_columns, style=plot.style_columns, transp=20)
+
+
+plotshape(series=crossover(longs,shorts), style=shape.triangleup, color=color.green, size=size.tiny)
+plotshape(series=crossunder(longs,shorts), style=shape.triangledown, color=color.red, size=size.tiny)
+
+
+hline(40000, title="40k", color=color.gray, linestyle=hline.style_dashed)
+hline(20000, title="20k", color=color.gray, linestyle=hline.style_dashed)
+hline(0, title="Zero", color=color.gray, linestyle=hline.style_dashed)
+hline(-20000, title="-20k", color=color.gray, linestyle=hline.style_dashed)
